@@ -6,7 +6,8 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.aws.core.region.RegionProvider;
+import org.springframework.cloud.aws.core.region.StaticRegionProvider;
 import org.springframework.cloud.aws.messaging.core.QueueMessagingTemplate;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,14 +15,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SQSConfiguration {
 
-    @Value("${cloud.aws.credentials.access-key}")
-    private String accessKey;
-
-    @Value("${cloud.aws.credentials.secret-key}")
-    private String secretKey;
-
-    /*private String accessKey="AKIAJP7ZDO2MOS2NOPYA";
-    private String secretKey="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";*/
+    private String accessKey="";
+    private String secretKey="";
     @Bean
     public QueueMessagingTemplate queueMessagingTemplate()
     {
@@ -31,11 +26,16 @@ public class SQSConfiguration {
     private AmazonSQSAsync buildAmazonSQSAsync() {
         return AmazonSQSAsyncClientBuilder
                 .standard()
-                .withRegion(Regions.AP_SOUTH_1)
+                .withRegion(Regions.US_EAST_1)
                 .withCredentials(
                         new AWSStaticCredentialsProvider(
                                 new BasicAWSCredentials(accessKey,secretKey)
                         )
                 ).build();
+    }
+
+    @Bean
+    public RegionProvider regionProvider() {
+        return new StaticRegionProvider("us-east-1");
     }
 }
